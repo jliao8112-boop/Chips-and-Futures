@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>期貨籌碼雙軌雷達｜公開戰情看板</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+    body {
+      font-family: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #070b14;
+      color: #e2e8f0;
+    }
+    .glass-card {
+      background: linear-gradient(145deg, rgba(17, 24, 39, 0.92), rgba(11, 16, 28, 0.96));
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.65);
+    }
+    .hero-red {
+      background: linear-gradient(135deg, rgba(127, 29, 29, 0.34), rgba(15, 23, 42, 0.94) 55%, rgba(69, 10, 10, 0.28));
+      border: 1px solid rgba(239, 68, 68, 0.42);
+      box-shadow: 0 0 36px -10px rgba(239, 68, 68, 0.32);
+    }
+    .hero-orange {
+      background: linear-gradient(135deg, rgba(154, 52, 18, 0.34), rgba(15, 23, 42, 0.94) 55%, rgba(67, 20, 7, 0.28));
+      border: 1px solid rgba(249, 115, 22, 0.42);
+      box-shadow: 0 0 36px -10px rgba(249, 115, 22, 0.28);
+    }
+    .hero-yellow {
+      background: linear-gradient(135deg, rgba(133, 77, 14, 0.32), rgba(15, 23, 42, 0.94) 55%, rgba(66, 32, 6, 0.28));
+      border: 1px solid rgba(234, 179, 8, 0.42);
+      box-shadow: 0 0 36px -10px rgba(234, 179, 8, 0.24);
+    }
+    .hero-green {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.34), rgba(15, 23, 42, 0.94) 55%, rgba(6, 78, 59, 0.22));
+      border: 1px solid rgba(16, 185, 129, 0.42);
+      box-shadow: 0 0 36px -10px rgba(16, 185, 129, 0.25);
+    }
+    .pulse-dot {
+      animation: pulseRing 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulseRing {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.88); }
+    }
+    .mono-num {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-rose-500/30 selection:text-rose-200">
+  <!-- Top Bar -->
+  <header class="sticky top-0 z-30 border-b border-slate-800/80 bg-[#070b14]/90 backdrop-blur-md">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-500/15 ring-1 ring-rose-500/40">
+          <i data-lucide="radar" class="h-5 w-5 text-rose-400"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm font-bold tracking-wide text-white sm:text-base">期貨籌碼雙軌雷達</h1>
+            <span class="hidden rounded-full bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-slate-300 ring-1 ring-slate-700 sm:inline-block">LIVE SNAPSHOT</span>
+          </div>
+          <p id="updated-at-label" class="text-xs text-slate-400">資料更新：載入中...</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="inline-flex rounded-lg bg-slate-900 p-0.5 ring-1 ring-slate-800" role="group" aria-label="檢視模式切換">
+          <button id="btn-mode-full" type="button" class="rounded-md bg-slate-700 px-3 py-1.5 text-xs font-semibold text-white transition">完整戰情</button>
+          <button id="btn-mode-compact" type="button" class="rounded-md px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:text-white">極簡燈號</button>
+        </div>
+        <button id="btn-copy-summary" type="button" class="inline-flex items-center gap-1.5 rounded-lg bg-slate-800/90 px-3 py-1.5 text-xs font-semibold text-slate-200 ring-1 ring-slate-700 transition hover:bg-slate-700 hover:text-white">
+          <i data-lucide="share-2" class="h-3.5 w-3.5 text-sky-400"></i>
+          <span>複製分享摘要</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl space-y-5 px-4 py-5 sm:px-6 sm:py-7">
+    <!-- Hero Alert Banner -->
+    <section id="hero-banner" class="hero-red rounded-2xl p-5 sm:p-6">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div class="space-y-3 lg:max-w-3xl">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-2 rounded-full bg-rose-600/25 px-3 py-1 text-xs font-bold text-rose-200 ring-1 ring-rose-500/50">
+              <span class="pulse-dot h-2 w-2 rounded-full bg-rose-400"></span>
+              <span id="hero-radar-name">T-10~T-3 籌碼總經核心雷達</span>
+            </span>
+            <span id="hero-lights-badge" class="rounded-full bg-red-500/20 px-2.5 py-1 text-xs font-bold text-red-200 ring-1 ring-red-400/40">5/5 預警燈亮起</span>
+          </div>
+          <h2 id="hero-status-title" class="text-xl font-extrabold tracking-tight text-white sm:text-2xl">
+            🚨 崩盤前夕／總部熔斷高危 (5/5 預警燈亮起)
+          </h2>
+          <p id="hero-exposure-cap" class="inline-flex items-center gap-2 rounded-xl bg-amber-500/15 px-3.5 py-2 text-sm font-bold text-amber-200 ring-1 ring-amber-400/35">
+            🛡️ 建議水位上限：≤ 30%（凍結右側新買單，嚴防多殺多與死貓跳）
+          </p>
+          <div class="rounded-xl bg-slate-950/65 p-3.5 text-sm leading-relaxed text-slate-200 ring-1 ring-slate-800/80">
+            <span class="font-bold text-rose-300">📌 聯防指令：</span>
+            <span id="hero-directive">多維前兆共振或總部防線已鎖定：嚴禁追高與左側盲目接刀，優先檢視持股 13:20 防守線，單日急殺破線 &lt;= -6% 啟動提前逃生。</span>
+          </div>
+        </div>
+
+        <!-- Quick KPI Stack -->
+        <div class="grid shrink-0 grid-cols-2 gap-3 lg:w-72">
+          <div class="rounded-xl bg-slate-950/80 p-3.5 ring-1 ring-rose-500/30">
+            <div class="text-[11px] font-medium text-slate-400">雙軌合成總持股</div>
+            <div id="kpi-total-alloc" class="mono-num mt-1 text-xl font-black text-rose-400">0% ~ 10%</div>
+            <div class="mt-0.5 text-[11px] text-slate-400">波段 + 短週期</div>
+          </div>
+          <div class="rounded-xl bg-slate-950/80 p-3.5 ring-1 ring-amber-500/30">
+            <div class="text-[11px] font-medium text-slate-400">盤中逃生閥</div>
+            <div id="kpi-escape-valve" class="mono-num mt-1 text-2xl font-black text-amber-400">60<span class="text-sm font-semibold text-slate-400">/100</span></div>
+            <div id="kpi-escape-sub" class="mt-0.5 text-[11px] font-semibold text-rose-300">🚨 已觸發</div>
+          </div>
+          <div class="rounded-xl bg-slate-950/80 p-3.5 ring-1 ring-red-500/30">
+            <div class="text-[11px] font-medium text-slate-400">盤中雙巴誘捕風險</div>
+            <div id="kpi-whipsaw" class="mono-num mt-1 text-2xl font-black text-red-400">85%</div>
+            <div id="kpi-whipsaw-sub" class="mt-0.5 text-[11px] text-red-300">🚨 極高風險</div>
+          </div>
+          <div class="rounded-xl bg-slate-950/80 p-3.5 ring-1 ring-slate-700/80">
+            <div class="text-[11px] font-medium text-slate-400">VIX / 維持率</div>
+            <div id="kpi-vix-margin" class="mono-num mt-1 text-base font-extrabold text-white">35.9 <span class="text-slate-500">/</span> 148.8%</div>
+            <div class="mt-0.5 text-[11px] text-amber-300">波動與信用觀測</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 Warning Lights Strip -->
+      <div class="mt-5 border-t border-rose-500/20 pt-4">
+        <div class="mb-3 flex items-center justify-between">
+          <h3 id="five-lights-heading" class="text-xs font-bold uppercase tracking-wider text-rose-200/90">五維總經與籌碼預警燈（5/5 亮起）</h3>
+          <div id="five-dots-indicator" class="flex items-center gap-1.5" aria-label="五維預警燈狀態"></div>
+        </div>
+        <div id="warning-lights-grid" class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-5"></div>
+      </div>
+    </section>
+
+    <!-- Dual Track Cards -->
+    <section class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      <!-- Track 1 -->
+      <article class="glass-card flex flex-col justify-between rounded-2xl p-5 sm:p-6">
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="rounded-lg bg-indigo-500/15 px-2.5 py-1 text-xs font-bold text-indigo-300 ring-1 ring-indigo-500/30">🏛️ TRACK 1</span>
+              <h3 class="text-base font-bold text-white">波段戰略核心軌 (13:15尾盤定錨)</h3>
+            </div>
+            <span class="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-medium text-slate-300 ring-1 ring-slate-700">防雙巴底倉</span>
+          </div>
+
+          <div class="rounded-xl bg-rose-950/50 px-4 py-3 ring-1 ring-rose-500/40">
+            <div id="t1-status" class="text-base font-extrabold text-rose-200">💀 【系統性流動性危機 (雙重確認)】</div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="rounded-xl bg-slate-900/90 p-3.5 ring-1 ring-slate-800">
+              <div class="text-xs text-slate-400">🏛️ 波段核心底倉建議 (上限70%)</div>
+              <div id="t1-alloc" class="mono-num mt-1 text-2xl font-black text-rose-400">0% ~ 10%</div>
+            </div>
+            <div class="rounded-xl bg-slate-900/90 p-3.5 ring-1 ring-slate-800">
+              <div class="text-xs text-slate-400">波段防洗盤緩衝防線 (-0.8%)</div>
+              <div id="t1-defense" class="mt-1 text-sm font-bold text-amber-300">季線緩衝線 (45,345) 已失守，退守整數關卡</div>
+            </div>
+          </div>
+
+          <div class="full-only space-y-2.5 text-sm leading-relaxed text-slate-300">
+            <p><span class="font-bold text-sky-300">🛡️ 主要提醒：</span><span id="t1-reminder">已通過『破季線緩衝 + 總經/維持率惡化』雙重確認，非單純洗盤。</span></p>
+            <p id="t1-detail" class="rounded-xl bg-slate-900/70 p-3 text-slate-300 ring-1 ring-slate-800/80">總經與籌碼多重核彈共振 (VIX恐慌失控(35.9&gt;=30))！大盤實質失守季線緩衝帶且流動性緊縮，啟動最高級別去槓桿防禦。</p>
+          </div>
+        </div>
+
+        <div class="mt-4 border-t border-slate-800 pt-3 text-xs text-slate-400">
+          <span class="font-semibold text-slate-300">雙軌合成總建議：</span>
+          <span id="t1-combined">總持股 0% ~ 10% (波段 0% ~ 10% | 短週期 0% (空頭鎖定))</span>
+        </div>
+      </article>
+
+      <!-- Track 2 -->
+      <article class="glass-card flex flex-col justify-between rounded-2xl p-5 sm:p-6">
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="rounded-lg bg-amber-500/15 px-2.5 py-1 text-xs font-bold text-amber-300 ring-1 ring-amber-500/30">⚡ TRACK 2</span>
+              <h3 class="text-base font-bold text-white">短週期動態戰術軌 (1~5日調節)</h3>
+            </div>
+            <span class="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-medium text-slate-300 ring-1 ring-slate-700">短週期游擊倉</span>
+          </div>
+
+          <div class="rounded-xl bg-red-950/50 px-4 py-3 ring-1 ring-red-500/40">
+            <div id="t2-status" class="text-base font-extrabold text-red-200">🛑 【短週期：空頭重挫鎖定 / 嚴禁接刀】</div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="rounded-xl bg-slate-900/90 p-3.5 ring-1 ring-slate-800">
+              <div class="text-xs text-slate-400">⚡ 短週期戰術持股建議 (上限30%)</div>
+              <div id="t2-alloc" class="mono-num mt-1 text-2xl font-black text-red-400">0% (空頭鎖定)</div>
+            </div>
+            <div class="rounded-xl bg-slate-900/90 p-3.5 ring-1 ring-slate-800">
+              <div class="text-xs text-slate-400">隔夜美股動能 (SOX/TSM)</div>
+              <div id="t2-overnight" class="mono-num mt-1 text-xl font-black text-rose-400">-10.73% / -9.48%</div>
+            </div>
+          </div>
+
+          <div class="full-only space-y-2.5 text-sm leading-relaxed text-slate-300">
+            <p><span class="font-bold text-amber-300">⚡ 主要提醒：</span><span id="t2-reminder">🚫 短週期倉位強制鎖定 0%！急殺谷底不追砍現貨，但未見 10:30 後爆量長下影線站穩日內均價線 (VWAP) 與櫃買翻紅前，嚴禁左側接刀搶反彈。</span></p>
+            <p id="t2-detail" class="rounded-xl bg-slate-900/70 p-3 text-slate-300 ring-1 ring-slate-800/80">波段處於空頭防禦且隔夜美股承壓 (-10.21%) 或 VIX 偏高 (35.9)、維持率 148.8%，短線雖負乖離 (-15.65%) 但空方慣性極強。</p>
+          </div>
+        </div>
+
+        <div class="mt-4 border-t border-slate-800 pt-3 text-xs text-slate-400">
+          <span class="font-semibold text-slate-300">短週期持股：</span>
+          <span id="t2-note">0% (空頭重挫熔斷，保留現金)</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- Visual Charts Row (Full Mode) -->
+    <section class="full-only grid grid-cols-1 gap-5 lg:grid-cols-2">
+      <div class="glass-card rounded-2xl p-5">
+        <div class="mb-3 flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white">核心風險壓力儀表（0 ~ 100）</h3>
+          <span class="text-xs text-slate-400">數值愈高代表防禦等級愈嚴峻</span>
+        </div>
+        <div class="relative h-56">
+          <canvas id="stressChart"></canvas>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5">
+        <div class="mb-3 flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white">跨市場資金流向與季線乖離對比 (%)</h3>
+          <span class="text-xs text-slate-400">AI 源頭破線 vs 傳產/金融逆勢 RS</span>
+        </div>
+        <div class="relative h-56">
+          <canvas id="rotationChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- EP374 & Guidance Section -->
+    <section class="glass-card rounded-2xl p-5 sm:p-6">
+      <div class="space-y-4">
+        <!-- EP374 Alert -->
+        <div class="rounded-xl border border-amber-500/35 bg-amber-950/25 p-4">
+          <div class="mb-1 text-xs font-bold text-amber-300" id="ep374-badge">🚨 AI源頭破季線頸線 ✕ 資金轉進低基期傳產/金融</div>
+          <p id="ep374-text" class="text-sm leading-relaxed text-slate-200">【EP374 週期與資金流向警示】：美股費半 (^SOX 距季線 -26.1%) 與台積電 ADR (距季線 -24.6%) 同步跌破 60MA 季線頸線；同時近 20 日鋼鐵代表相對大盤強弱 (RS: +9.2%) / 金融 (RS: +7.9%) 逆勢走強，提防高基期電子波段提款。</p>
+        </div>
+
+        <!-- Action Guidance Footer 3-Column -->
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+          <div class="rounded-xl bg-slate-900/80 p-3.5 ring-1 ring-red-500/25">
+            <div class="text-xs font-bold text-slate-400">🔄 盤中雙巴誘捕風險</div>
+            <p id="guide-whipsaw" class="mt-1 text-sm font-semibold text-red-300">🚨 極高 (85% - 負乖離過大，急殺追砍極易砍在反彈最低點)</p>
+          </div>
+          <div class="rounded-xl bg-slate-900/80 p-3.5 ring-1 ring-slate-700/80">
+            <div class="text-xs font-bold text-slate-400">🛒 空手者波段指引</div>
+            <p id="guide-cash" class="mt-1 text-sm font-semibold text-slate-100">🚫 嚴禁任何左側摸底，等待 VIX 降溫與融資清洗完畢</p>
+          </div>
+          <div class="rounded-xl bg-slate-900/80 p-3.5 ring-1 ring-amber-500/25">
+            <div class="text-xs font-bold text-slate-400">🏃 持倉者波段指引</div>
+            <p id="guide-holder" class="mt-1 text-sm font-semibold text-amber-200">⚠️ 13:15 尾盤確認破線優先去槓桿，保留 90% 以上現金</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="pb-4 text-center text-xs text-slate-500">
+      期貨籌碼雙軌雷達公開摘要頁・僅供數據觀測紀錄參考，不構成任何投資建議。
+    </footer>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="pointer-events-none fixed bottom-5 right-5 z-50 translate-y-4 rounded-xl bg-slate-800 px-4 py-2.5 text-xs font-semibold text-white opacity-0 shadow-lg ring-1 ring-slate-600 transition-all duration-200"></div>
+
+  <script>
+    const FALLBACK_SNAPSHOT = {
+      updated_at: "最新雙軌快照",
+      severity: "RED",
+      radar_name: "T-10~T-3 籌碼總經核心雷達",
+      status_title: "🚨 崩盤前夕／總部熔斷高危 (5/5 預警燈亮起)",
+      lights_count: 5,
+      lights_total: 5,
+      exposure_cap: "🛡️ 建議水位上限：≤ 30%（凍結右側新買單，嚴防多殺多與死貓跳）",
+      directive: "多維前兆共振或總部防線已鎖定：嚴禁追高與左側盲目接刀，優先檢視持股 13:20 防守線，單日急殺破線 <= -6% 啟動提前逃生。",
+      kpi: {
+        total_alloc: "0% ~ 10%",
+        escape_valve: 60,
+        whipsaw_risk: 85,
+        vix: 35.9,
+        margin_rate: 148.8,
+        foreign_3d_pressure: 81
+      },
+      warning_lights: [
+        { id: "①", title: "美股AI源頭", detail: "費半與 TSM ADR 雙破 60MA 季線頸線；隔夜重挫 (SOX -10.7% / TSM -9.5%)", active: true },
+        { id: "②", title: "大盤結構/冷卻鎖", detail: "處於急殺後 10 日觀察窗（連站 5MA 僅 0 日）；大盤跌破 60MA 季線 (36,033 < 45,711)", active: true },
+        { id: "③", title: "波動/信用/匯率", detail: "VIX 恐慌升溫 (35.9)；美債 10Y 高壓 (4.91%)", active: true },
+        { id: "④", title: "期權籌碼擁擠", detail: "外資期貨淨空單破動態警戒 (-97,430 口)；選擇權 PCR 偏空 (62.0% < 80%)", active: true },
+        { id: "⑤", title: "寬度/融資背離", detail: "中小型股剪刀差惡化 (-21.7%)", active: true }
+      ],
+      track1: {
+        status: "💀 【系統性流動性危機 (雙重確認)】",
+        reminder: "已通過『破季線緩衝 + 總經/維持率惡化』雙重確認，非單純洗盤。",
+        detail: "總經與籌碼多重核彈共振 (VIX恐慌失控(35.9>=30))！大盤實質失守季線緩衝帶且流動性緊縮，啟動最高級別去槓桿防禦。",
+        alloc: "0% ~ 10%",
+        combined: "總持股 0% ~ 10% (波段 0% ~ 10% | 短週期 0% (空頭鎖定))",
+        defense: "季線緩衝線 (45,345) 已失守，退守整數關卡"
+      },
+      track2: {
+        status: "🛑 【短週期：空頭重挫鎖定 / 嚴禁接刀】",
+        reminder: "🚫 短週期倉位強制鎖定 0%！急殺谷底不追砍現貨，但未見 10:30 後爆量長下影線站穩日內均價線 (VWAP) 與櫃買翻紅前，嚴禁左側接刀搶反彈。",
+        detail: "波段處於空頭防禦且隔夜美股承壓 (-10.21%) 或 VIX 偏高 (35.9)、維持率 148.8%，短線雖負乖離 (-15.65%) 但空方慣性極強。",
+        alloc: "0% (空頭鎖定)",
+        note: "0% (空頭重挫熔斷，保留現金)",
+        overnight: "-10.73% / -9.48%"
+      },
+      command: {
+        ep374_badge: "🚨 AI源頭破季線頸線 ✕ 資金轉進低基期傳產/金融",
+        ep374_text: "【EP374 週期與資金流向警示】：美股費半 (^SOX 距季線 -26.1%) 與台積電 ADR (距季線 -24.6%) 同步跌破 60MA 季線頸線；同時近 20 日鋼鐵代表相對大盤強弱 (RS: +9.2%) / 金融 (RS: +7.9%) 逆勢走強，提防高基期電子波段提款。",
+        guide_whipsaw: "🚨 極高 (85% - 負乖離過大，急殺追砍極易砍在反彈最低點)",
+        guide_cash: "🚫 嚴禁任何左側摸底，等待 VIX 降溫與融資清洗完畢",
+        guide_holder: "⚠️ 13:15 尾盤確認破線優先去槓桿，保留 90% 以上現金"
+      },
+      charts: {
+        rotation_labels: ["鋼鐵 20日RS", "金融 20日RS", "中小型剪刀差", "TSM ADR 距季線", "^SOX 距季線"],
+        rotation_values: [9.2, 7.9, -21.7, -24.6, -26.1]
+      }
+    };
+
+    let currentSignal = JSON.parse(JSON.stringify(FALLBACK_SNAPSHOT));
+    let stressChartInstance = null;
+    let rotationChartInstance = null;
+    let toastTimer = null;
+
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.remove("opacity-0", "translate-y-4");
+      el.classList.add("opacity-100", "translate-y-0");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.add("opacity-0", "translate-y-4");
+        el.classList.remove("opacity-100", "translate-y-0");
+      }, 2400);
+    }
+
+    function applyHeroTheme(severity) {
+      const banner = document.getElementById("hero-banner");
+      banner.classList.remove("hero-red", "hero-orange", "hero-yellow", "hero-green");
+      const sev = (severity || "RED").toUpperCase();
+      if (sev === "GREEN") banner.classList.add("hero-green");
+      else if (sev === "YELLOW") banner.classList.add("hero-yellow");
+      else if (sev === "ORANGE") banner.classList.add("hero-orange");
+      else banner.classList.add("hero-red");
+    }
+
+    function renderSignal(data) {
+      applyHeroTheme(data.severity);
+
+      document.getElementById("updated-at-label").textContent = `資料更新：${data.updated_at || "即時快照"}`;
+      document.getElementById("hero-radar-name").textContent = data.radar_name || "T-10~T-3 籌碼總經核心雷達";
+      document.getElementById("hero-lights-badge").textContent = `${data.lights_count}/${data.lights_total} 預警燈亮起`;
+      document.getElementById("five-lights-heading").textContent = `五維總經與籌碼預警燈（${data.lights_count}/${data.lights_total} 亮起）`;
+      document.getElementById("hero-status-title").textContent = data.status_title;
+      document.getElementById("hero-exposure-cap").textContent = data.exposure_cap;
+      document.getElementById("hero-directive").textContent = data.directive;
+
+      const escapeVal = Number(data.kpi.escape_valve || 0);
+      const whipsawVal = Number(data.kpi.whipsaw_risk || 0);
+      document.getElementById("kpi-total-alloc").textContent = data.kpi.total_alloc;
+      document.getElementById("kpi-escape-valve").innerHTML = `${escapeVal}<span class="text-sm font-semibold text-slate-400">/100</span>`;
+      document.getElementById("kpi-escape-sub").textContent = escapeVal >= 60 ? "🚨 已觸發" : (escapeVal >= 35 ? "⚠️ 警戒觀察" : "🟢 結構安定");
+      document.getElementById("kpi-whipsaw").textContent = `${whipsawVal}%`;
+      document.getElementById("kpi-whipsaw-sub").textContent = whipsawVal >= 75 ? "🚨 極高風險" : (whipsawVal >= 55 ? "🟡 中高風險" : "🟢 低風險");
+      document.getElementById("kpi-vix-margin").innerHTML = `${data.kpi.vix} <span class="text-slate-500">/</span> ${data.kpi.margin_rate}%`;
+
+      // 5 dots
+      const dotsEl = document.getElementById("five-dots-indicator");
+      dotsEl.innerHTML = "";
+      (data.warning_lights || []).forEach((item) => {
+        const dot = document.createElement("span");
+        dot.className = item.active
+          ? "h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.85)]"
+          : "h-2.5 w-2.5 rounded-full bg-emerald-500/70";
+        dotsEl.appendChild(dot);
+      });
+
+      // 5 cards
+      const gridEl = document.getElementById("warning-lights-grid");
+      gridEl.innerHTML = "";
+      (data.warning_lights || []).forEach((item) => {
+        const card = document.createElement("div");
+        card.className = item.active
+          ? "rounded-xl bg-slate-950/75 p-3 ring-1 ring-rose-500/35"
+          : "rounded-xl bg-slate-950/50 p-3 ring-1 ring-emerald-500/20";
+        const titleColor = item.active ? "text-rose-300" : "text-emerald-300";
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-1.5">
+            <span class="text-xs font-bold ${titleColor}">${item.id} ${item.title}</span>
+            <span class="h-2 w-2 shrink-0 rounded-full ${item.active ? "bg-rose-500" : "bg-emerald-500"}"></span>
+          </div>
+          <p class="mt-1.5 text-xs leading-relaxed text-slate-300">${item.detail}</p>
+        `;
+        gridEl.appendChild(card);
+      });
+
+      // Track 1
+      document.getElementById("t1-status").textContent = data.track1.status;
+      document.getElementById("t1-alloc").textContent = data.track1.alloc;
+      document.getElementById("t1-defense").textContent = data.track1.defense;
+      document.getElementById("t1-reminder").textContent = data.track1.reminder;
+      document.getElementById("t1-detail").textContent = data.track1.detail;
+      document.getElementById("t1-combined").textContent = data.track1.combined;
+
+      // Track 2
+      document.getElementById("t2-status").textContent = data.track2.status;
+      document.getElementById("t2-alloc").textContent = data.track2.alloc;
+      document.getElementById("t2-overnight").textContent = data.track2.overnight;
+      document.getElementById("t2-reminder").textContent = data.track2.reminder;
+      document.getElementById("t2-detail").textContent = data.track2.detail;
+      document.getElementById("t2-note").textContent = data.track2.note;
+
+      // EP374 & Guidance
+      document.getElementById("ep374-badge").textContent = data.command.ep374_badge;
+      document.getElementById("ep374-text").textContent = data.command.ep374_text;
+      document.getElementById("guide-whipsaw").textContent = data.command.guide_whipsaw;
+      document.getElementById("guide-cash").textContent = data.command.guide_cash;
+      document.getElementById("guide-holder").textContent = data.command.guide_holder;
+
+      renderCharts(data);
+    }
+
+    function renderCharts(data) {
+      if (typeof Chart === "undefined") return;
+      const lightPct = data.lights_total > 0 ? Math.round((data.lights_count / data.lights_total) * 100) : 0;
+
+      const stressCtx = document.getElementById("stressChart");
+      if (stressChartInstance) stressChartInstance.destroy();
+      stressChartInstance = new Chart(stressCtx, {
+        type: "bar",
+        data: {
+          labels: ["5維預警燈亮起率", "盤中雙巴誘捕風險", "外資3D空方壓力", "盤中逃生閥分數"],
+          datasets: [{
+            label: "風險分數",
+            data: [lightPct, data.kpi.whipsaw_risk, data.kpi.foreign_3d_pressure, data.kpi.escape_valve],
+            backgroundColor: [
+              "rgba(244, 63, 94, 0.85)",
+              "rgba(239, 68, 68, 0.85)",
+              "rgba(249, 115, 22, 0.85)",
+              "rgba(245, 158, 11, 0.85)"
+            ],
+            borderRadius: 6,
+            barThickness: 22
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.parsed.x} / 100`
+              }
+            }
+          },
+          scales: {
+            x: {
+              min: 0,
+              max: 100,
+              grid: { color: "rgba(148, 163, 184, 0.1)" },
+              ticks: { color: "#94a3b8", font: { size: 11 } }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: "#e2e8f0", font: { size: 12, weight: "600" } }
+            }
+          }
+        }
+      });
+
+      const rotCtx = document.getElementById("rotationChart");
+      if (rotationChartInstance) rotationChartInstance.destroy();
+      const rotVals = (data.charts && data.charts.rotation_values) || [];
+      const rotLabels = (data.charts && data.charts.rotation_labels) || [];
+      rotationChartInstance = new Chart(rotCtx, {
+        type: "bar",
+        data: {
+          labels: rotLabels,
+          datasets: [{
+            label: "幅度 (%)",
+            data: rotVals,
+            backgroundColor: rotVals.map((v) => v >= 0 ? "rgba(16, 185, 129, 0.82)" : "rgba(244, 63, 94, 0.82)"),
+            borderRadius: 6,
+            barThickness: 22
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.parsed.x > 0 ? "+" : ""}${ctx.parsed.x}%`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: "rgba(148, 163, 184, 0.1)" },
+              ticks: {
+                color: "#94a3b8",
+                font: { size: 11 },
+                callback: (v) => `${v}%`
+              }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: "#e2e8f0", font: { size: 12, weight: "600" } }
+            }
+          }
+        }
+      });
+    }
+
+    function setViewMode(mode) {
+      const btnFull = document.getElementById("btn-mode-full");
+      const btnCompact = document.getElementById("btn-mode-compact");
+      const fullOnlyEls = document.querySelectorAll(".full-only");
+
+      if (mode === "compact") {
+        btnCompact.className = "rounded-md bg-slate-700 px-3 py-1.5 text-xs font-semibold text-white transition";
+        btnFull.className = "rounded-md px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:text-white";
+        fullOnlyEls.forEach((el) => el.classList.add("hidden"));
+      } else {
+        btnFull.className = "rounded-md bg-slate-700 px-3 py-1.5 text-xs font-semibold text-white transition";
+        btnCompact.className = "rounded-md px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:text-white";
+        fullOnlyEls.forEach((el) => el.classList.remove("hidden"));
+        renderCharts(currentSignal);
+      }
+    }
+
+    function buildShareText(d) {
+      return [
+        `【${d.radar_name}】(${d.updated_at})`,
+        d.status_title,
+        d.exposure_cap,
+        `🎯 雙軌合成總持股：${d.kpi.total_alloc}（逃生閥 ${d.kpi.escape_valve}/100｜雙巴風險 ${d.kpi.whipsaw_risk}%）`,
+        `🏛️ 波段核心軌：${d.track1.status}｜建議 ${d.track1.alloc}`,
+        `⚡ 短週期戰術軌：${d.track2.status}｜建議 ${d.track2.alloc}`,
+        `🛒 空手指引：${d.command.guide_cash}`,
+        `🏃 持倉指引：${d.command.guide_holder}`
+      ].join("\n");
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("已複製戰情摘要，可直接貼到 LINE / Discord");
+        }).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast("已複製戰情摘要，可直接貼到 LINE / Discord");
+      } catch (e) {
+        showToast("複製失敗，請手動選取文字");
+      }
+      document.body.removeChild(ta);
+    }
+
+    // Air-gapped static JSON reader: reads only ./signal.json from same origin when hosted on HTTPS
+    async function loadPublicSnapshot() {
+      const host = window.location.hostname || "";
+      if (window.location.protocol === "https:" && host.endsWith("github.io")) {
+        try {
+          const res = await fetch(`./signal.json?t=${Date.now()}`, { cache: "no-store" });
+          if (res.ok) {
+            const remoteData = await res.json();
+            if (remoteData && remoteData.kpi && remoteData.track1 && remoteData.track2) {
+              currentSignal = remoteData;
+              renderSignal(currentSignal);
+            }
+          }
+        } catch (_) {
+          // Keep embedded snapshot on fallback
+        }
+      }
+    }
+
+    document.getElementById("btn-mode-full").addEventListener("click", () => setViewMode("full"));
+    document.getElementById("btn-mode-compact").addEventListener("click", () => setViewMode("compact"));
+    document.getElementById("btn-copy-summary").addEventListener("click", () => copyText(buildShareText(currentSignal)));
+
+    window.addEventListener("DOMContentLoaded", () => {
+      if (typeof lucide !== "undefined") lucide.createIcons();
+      renderSignal(currentSignal);
+      loadPublicSnapshot();
+    });
+  </script>
+</body>
+</html>
