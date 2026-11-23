@@ -953,21 +953,36 @@
       return String(text || "").replace(/^[\s🚨💀🛑⚠️🔥📌⚡🛡️✅🟢🟡🟠🔴【】]+/, "").trim();
     }
 
+    function parseAllocMid(allocStr, sev) {
+      const nums = String(allocStr || "").match(/\d+(?:\.\d+)?/g);
+      if (nums && nums.length >= 2) {
+        return Math.max(0, Math.min(100, (parseFloat(nums[0]) + parseFloat(nums[1])) / 2));
+      }
+      if (nums && nums.length === 1) {
+        return Math.max(0, Math.min(100, parseFloat(nums[0])));
+      }
+      return sev === "GREEN" ? 84 : sev === "YELLOW" ? 55 : sev === "ORANGE" ? 28 : 8;
+    }
+
     function computeBarometer(data) {
       const sev = String(data.severity || "YELLOW").toUpperCase();
       const lights = Number(data.lights_count ?? 0);
       const totalLights = Math.max(1, Number(data.lights_total ?? 5));
       const kpi = data.kpi || {};
-      const escapeValve = Number(kpi.escape_valve ?? 0);
-      const whipsaw = Number(kpi.whipsaw_risk ?? 0);
+      const escapeValve = Math.min(100, Math.max(0, Number(kpi.escape_valve ?? 0)));
+      const foreign3d = Math.min(100, Math.max(0, Number(kpi.foreign_3d_pressure ?? 50)));
+      const allocMid = parseAllocMid(kpi.total_alloc || (data.track1 && data.track1.alloc), sev);
 
-      const base = sev === "GREEN" ? 84 : sev === "YELLOW" ? 58 : sev === "ORANGE" ? 32 : 14;
-      const lightRatio = Math.min(1, Math.max(0, lights / totalLights));
-      const raw = (1 - lightRatio) * 55
-        + (100 - Math.min(100, Math.max(0, escapeValve))) * 0.25
-        + (100 - Math.min(100, Math.max(0, whipsaw))) * 0.20;
-
-      const score = Math.max(2, Math.min(98, Math.round(raw * 0.55 + base * 0.45)));
+      const lightScore = (1 - Math.min(1, Math.max(0, lights / totalLights))) * 100;
+      let score = Math.round(
+        allocMid * 0.40 +
+        lightScore * 0.25 +
+        (100 - escapeValve) * 0.20 +
+        (100 - foreign3d) * 0.15
+      );
+      if (sev === "RED") score = Math.min(score, 22);
+      else if (sev === "ORANGE") score = Math.min(score, 42);
+      score = Math.max(2, Math.min(98, score));
 
       if (score <= 22) {
         return {
@@ -1074,7 +1089,9 @@
       const kpiActionShort = document.getElementById("kpiActionShort");
       kpiActionShort.textContent = b.actionShort;
       kpiActionShort.className = "kpi-val " + toneTextClass(b.tone);
-      document.getElementById("kpiEscapeHint").textContent = `逃生閥 ${kpi.escape_valve ?? "--"} · 雙巴 ${kpi.whipsaw_risk ?? "--"}%`;
+      const whipNum = Number(kpi.whipsaw_risk ?? 0);
+      const whipNote = whipNum >= 60 ? "（宜等13:15確認）" : "";
+      document.getElementById("kpiEscapeHint").textContent = `逃生閥 ${kpi.escape_valve ?? "--"} · 雙巴 ${kpi.whipsaw_risk ?? "--"}%${whipNote}`;
 
       const vixVal = kpi.vix ?? "--";
       const marginVal = kpi.margin_rate != null ? `${kpi.margin_rate}%` : "--";
