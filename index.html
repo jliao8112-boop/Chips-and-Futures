@@ -974,7 +974,7 @@
       const allocMid = parseAllocMid(kpi.total_alloc || (data.track1 && data.track1.alloc), sev);
 
       const lightScore = (1 - Math.min(1, Math.max(0, lights / totalLights))) * 100;
-      const chartTrendAdj = Math.max(-12, Math.min(10, Math.round(Number(kpi.chart_trend_adj ?? 0))));
+      const chartTrendAdj = Math.max(-15, Math.min(12, Math.round(Number(kpi.chart_trend_adj ?? 0))));
       let score = Math.round(
         allocMid * 0.40 +
         lightScore * 0.25 +
@@ -1092,7 +1092,7 @@
       kpiActionShort.className = "kpi-val " + toneTextClass(b.tone);
       const whipNum = Number(kpi.whipsaw_risk ?? 0);
       const whipNote = whipNum >= 60 ? "（宜等13:15確認）" : "";
-      const trendAdjVal = Math.max(-12, Math.min(10, Math.round(Number(kpi.chart_trend_adj ?? 0))));
+      const trendAdjVal = Math.max(-15, Math.min(12, Math.round(Number(kpi.chart_trend_adj ?? 0))));
       const trendAdjStr = trendAdjVal !== 0 ? ` · 圖表微調 ${trendAdjVal > 0 ? "+" : ""}${trendAdjVal}分` : "";
       const escapeHintEl = document.getElementById("kpiEscapeHint");
       escapeHintEl.textContent = `逃生閥 ${kpi.escape_valve ?? "--"} · 雙巴 ${kpi.whipsaw_risk ?? "--"}%${whipNote}${trendAdjStr}`;
