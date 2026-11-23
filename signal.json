@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-23 14:23",
+  "updated_at": "2026-11-23 15:16",
   "severity": "RED",
   "radar_name": "T-10~T-3 籌碼總經核心雷達",
   "status_title": "🚨 崩盤前夕／總部熔斷高危 (5/5 預警燈亮起)",
@@ -9,14 +9,13 @@
   "directive": "多維前兆共振或總部防線已鎖定：嚴禁追高與左側盲目接刀，優先檢視持股 13:20 防守線，單日急殺破線 <= -6% 啟動提前逃生。",
   "kpi": {
     "total_alloc": "0% ~ 10%",
-    "escape_valve": 25,
+    "escape_valve": 45,
     "whipsaw_risk": 85,
     "vix": 35.9,
     "margin_rate": 171.5,
-    "foreign_3d_pressure": 41,
-    "chart_trend_adj": 5,
+    "foreign_3d_pressure": 100,
+    "chart_trend_adj": 1,
     "chart_trend_notes": [
-      "外資5日回補(+4)",
       "VIX加速衝高(-5)",
       "融資洗淨落底(+6)"
     ]
@@ -43,7 +42,7 @@
     {
       "id": "④",
       "title": "期權籌碼擁擠",
-      "detail": "選擇權 PCR 偏空 (62.0% < 80%)",
+      "detail": "外資期貨淨空單破動態警戒 (-101,996 口)；選擇權 PCR 偏空 (62.0% < 80%)",
       "active": true
     },
     {
