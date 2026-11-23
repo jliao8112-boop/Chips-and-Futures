@@ -975,15 +975,24 @@
 
       const lightScore = (1 - Math.min(1, Math.max(0, lights / totalLights))) * 100;
       const chartTrendAdj = Math.max(-15, Math.min(12, Math.round(Number(kpi.chart_trend_adj ?? 0))));
+      const extremeMeltup = Boolean(kpi.extreme_meltup);
       let score = Math.round(
         allocMid * 0.40 +
         lightScore * 0.25 +
         (100 - escapeValve) * 0.20 +
         (100 - foreign3d) * 0.15
-      ) + chartTrendAdj;
-      if (sev === "RED") score = Math.min(score, 22);
-      else if (sev === "ORANGE") score = Math.min(score, 42);
+      ) + chartTrendAdj + (extremeMeltup ? 12 : 0);
+      if (sev === "RED") score = Math.min(score, extremeMeltup ? 38 : 22);
+      else if (sev === "ORANGE") score = Math.min(score, extremeMeltup ? 48 : 42);
       score = Math.max(2, Math.min(98, score));
+
+      if (extremeMeltup && score <= 48) {
+        return {
+          score, zoneIndex: score <= 42 ? 1 : 2, weatherIcon: "⚡", weatherLabel: "極端軋空轉折",
+          actionLabel: "空單強制解鎖・禁開盤追高", actionShort: "禁空・等回測", tone: "warn",
+          summary: "隔夜美股史詩級暴漲反轉，強制解除防禦賣出鎖定；避險空單宜優先回補防軋空，多單等 09:30 回測均價線不破再試單。"
+        };
+      }
 
       if (score <= 22) {
         return {
