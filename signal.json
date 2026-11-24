@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-25 05:58",
+  "updated_at": "2026-11-25 07:54",
   "severity": "RED",
   "radar_name": "T-10~T-3 籌碼總經核心雷達",
   "status_title": "🚨 崩盤前夕／總部熔斷高危 (5/5 預警燈亮起)",
@@ -21,7 +21,8 @@
       "VIX高檔彎頭(+5)",
       "融資洗淨落底(+6)"
     ],
-    "extreme_meltup": false
+    "extreme_meltup": false,
+    "trend_confirmed_3d": false
   },
   "warning_lights": [
     {
