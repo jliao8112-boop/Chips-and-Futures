@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-24 15:55",
+  "updated_at": "2026-11-24 20:32",
   "severity": "RED",
   "radar_name": "T-10~T-3 籌碼總經核心雷達",
   "status_title": "🚨 崩盤前夕／總部熔斷高危 (5/5 預警燈亮起)",
@@ -11,14 +11,14 @@
     "total_alloc": "22% ~ 37%",
     "escape_valve": 45,
     "whipsaw_risk": 25,
-    "vix": 26.6,
+    "vix": 28.9,
     "margin_rate": 183.9,
     "foreign_3d_pressure": 100,
-    "chart_trend_adj": 9,
+    "chart_trend_adj": -1,
     "chart_trend_notes": [
       "基差翻正回補(+4)",
       "廣度剪刀差惡化(-6)",
-      "VIX高檔彎頭(+5)",
+      "VIX加速衝高(-5)",
       "融資洗淨落底(+6)"
     ],
     "extreme_meltup": true
@@ -39,7 +39,7 @@
     {
       "id": "③",
       "title": "波動/信用/匯率",
-      "detail": "VIX 恐慌升溫 (26.6)；美債 10Y 高壓 (4.92%)",
+      "detail": "VIX 恐慌升溫 (28.9)；美債 10Y 高壓 (4.92%)",
       "active": true
     },
     {
