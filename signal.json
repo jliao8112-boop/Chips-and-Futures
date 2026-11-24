@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-24 07:54",
+  "updated_at": "2026-11-24 08:43",
   "severity": "RED",
   "radar_name": "T-10~T-3 籌碼總經核心雷達",
   "status_title": "🚨 崩盤前夕／總部熔斷高危 (5/5 預警燈亮起)",
@@ -14,10 +14,9 @@
     "vix": 26.6,
     "margin_rate": 171.5,
     "foreign_3d_pressure": 100,
-    "chart_trend_adj": 11,
+    "chart_trend_adj": 5,
     "chart_trend_notes": [
-      "VIX高檔彎頭(+5)",
-      "融資洗淨落底(+6)"
+      "VIX高檔彎頭(+5)"
     ],
     "extreme_meltup": true
   },
@@ -31,7 +30,7 @@
     {
       "id": "②",
       "title": "大盤結構/冷卻鎖",
-      "detail": "處於急殺後 10 日觀察窗（連站 5MA 僅 0 日）；大盤跌破 60MA 季線 (36,812 < 45,578)",
+      "detail": "處於急殺後 10 日觀察窗（連站 5MA 僅 0 日）；大盤跌破 60MA 季線 (36,033 < 45,578)",
       "active": true
     },
     {
