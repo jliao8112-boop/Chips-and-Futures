@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-Hant" data-theme="dark">
+<html lang="zh-Hant" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>市場買賣晴雨表｜期貨籌碼雙軌雷達</title>
+  <title>市場買賣晴雨表</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -273,9 +273,11 @@
 
     .text-danger { color: var(--accent-danger); }
     .text-warn { color: var(--accent-warn); }
+    .text-neutral { color: var(--accent-neutral); }
     .text-good { color: var(--accent-good); }
     .text-info { color: var(--accent-info); }
     .tabular-nums { font-variant-numeric: tabular-nums; }
+    .hidden { display: none !important; }
 
     /* Hero Grid */
     .hero-grid {
@@ -439,7 +441,6 @@
       flex-direction: column;
       gap: 20px;
     }
-    .details-wrapper.hidden { display: none; }
 
     /* Inner Detailed Sections */
     .grid-2 {
@@ -545,7 +546,7 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
     }
-    .ep374-box {
+    .flow-note-box {
       border-left: 4px solid var(--accent-warn);
     }
 
@@ -594,15 +595,14 @@
   </style>
 </head>
 <body>
-  <!-- Sticky Calm Top Bar -->
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand-row">
-        <div id="brandBadge" class="brand-icon tone-danger" aria-hidden="true">⛈️</div>
+        <div id="brandBadge" class="brand-icon tone-neutral" aria-hidden="true">⛅</div>
         <div>
           <div class="brand-title-row">
             <h1 class="brand-title">市場買賣晴雨表</h1>
-            <span id="themeBadge" class="pill tone-danger">深色警戒 · 自動</span>
+            <span id="themeBadge" class="pill tone-neutral">自動配色</span>
           </div>
           <p id="updatedAtText" class="brand-sub">資料更新：載入中...</p>
         </div>
@@ -611,8 +611,8 @@
       <div class="controls-row">
         <div class="seg-group" role="group" aria-label="配色模式切換">
           <button id="themeAutoBtn" type="button" class="seg-btn active" onclick="setThemePreference('auto')">自動配色</button>
-          <button id="themeDarkBtn" type="button" class="seg-btn" onclick="setThemePreference('dark')">深色警戒</button>
-          <button id="themeLightBtn" type="button" class="seg-btn" onclick="setThemePreference('light')">白底常態</button>
+          <button id="themeDarkBtn" type="button" class="seg-btn" onclick="setThemePreference('dark')">深色模式</button>
+          <button id="themeLightBtn" type="button" class="seg-btn" onclick="setThemePreference('light')">淺色模式</button>
         </div>
         <button type="button" class="action-btn" onclick="copyShareSummary()">複製晴雨摘要</button>
       </div>
@@ -620,24 +620,23 @@
   </header>
 
   <main class="container main-stack">
-    <!-- DEFAULT VISIBLE: Main Buy/Sell Barometer Hero -->
+    <!-- Main Barometer Hero -->
     <section class="surface-card">
       <div class="hero-grid">
-        <!-- Left: Semi-Circular Barometer Gauge -->
         <div class="gauge-col">
           <div class="gauge-box">
             <svg viewBox="0 0 360 212" class="gauge-svg" role="img" aria-label="買賣晴雨表指針圖">
-              <path id="arc0" class="gauge-arc" d="M 52.2 171.3 A 128 128 0 0 1 69.2 114.0" stroke="#f43f5e" />
-              <path id="arc1" class="gauge-arc" d="M 83.4 94.0 A 128 128 0 0 1 132.1 59.3" stroke="#f59e0b" />
-              <path id="arc2" class="gauge-arc" d="M 155.6 52.4 A 128 128 0 0 1 204.4 52.4" stroke="#94a3b8" />
-              <path id="arc3" class="gauge-arc" d="M 227.9 59.3 A 128 128 0 0 1 276.6 94.0" stroke="#14b8a6" />
-              <path id="arc4" class="gauge-arc" d="M 290.8 114.0 A 128 128 0 0 1 307.8 171.3" stroke="#10b981" />
+              <path id="arc0" class="gauge-arc dim" d="M 52.2 171.3 A 128 128 0 0 1 69.2 114.0" stroke="#f43f5e" />
+              <path id="arc1" class="gauge-arc dim" d="M 83.4 94.0 A 128 128 0 0 1 132.1 59.3" stroke="#f59e0b" />
+              <path id="arc2" class="gauge-arc active" d="M 155.6 52.4 A 128 128 0 0 1 204.4 52.4" stroke="#94a3b8" />
+              <path id="arc3" class="gauge-arc dim" d="M 227.9 59.3 A 128 128 0 0 1 276.6 94.0" stroke="#14b8a6" />
+              <path id="arc4" class="gauge-arc dim" d="M 290.8 114.0 A 128 128 0 0 1 307.8 171.3" stroke="#10b981" />
 
               <text x="48" y="200" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text-muted)">防禦賣出</text>
               <text x="180" y="26" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text-muted)">中性整理</text>
               <text x="312" y="200" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text-muted)">積極買進</text>
 
-              <g id="gaugeNeedleGroup" style="transform: rotate(-66deg);">
+              <g id="gaugeNeedleGroup" style="transform: rotate(0deg);">
                 <path d="M 176.5 178 L 180 72 L 183.5 178 Z" fill="var(--gauge-needle)" opacity="0.92" />
                 <circle cx="180" cy="178" r="9.5" fill="var(--gauge-pivot-bg)" stroke="var(--gauge-needle)" stroke-width="3.5" />
               </g>
@@ -649,43 +648,42 @@
                 <span class="score-unit">/ 100 分</span>
               </div>
               <div class="weather-pill-wrap">
-                <span id="weatherPill" class="pill pill-md tone-danger">
-                  <span id="weatherIcon">⛈️</span>
-                  <span id="weatherLabel">暴風警戒</span>
+                <span id="weatherPill" class="pill pill-md tone-neutral">
+                  <span id="weatherIcon">⛅</span>
+                  <span id="weatherLabel">等待更新</span>
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Right: Main Headline, 3 Core Metrics & Directive -->
         <div class="hero-right">
           <div>
             <div class="hero-chips">
-              <span id="radarNameChip" class="pill pill-muted">T-10~T-3 籌碼總經核心雷達</span>
-              <span id="lightsChip" class="pill tone-danger">逆風燈號 5 / 5</span>
+              <span id="radarNameChip" class="pill pill-muted">市場晴雨指標</span>
+              <span id="lightsChip" class="pill tone-neutral">觀測狀態 --</span>
             </div>
-            <h2 id="actionHeadline" class="hero-headline">防禦避險・保留現金</h2>
-            <p id="actionSummary" class="hero-desc">多項總經與籌碼因子同步轉弱，建議優先守護本金、不急於左側抄底。</p>
+            <h2 id="actionHeadline" class="hero-headline">等待最新晴雨快照</h2>
+            <p id="actionSummary" class="hero-desc">尚無即時資料，請稍候自動同步。</p>
           </div>
 
           <div class="kpi-grid-3">
             <div class="surface-well">
-              <div class="kpi-label">建議總持股水位</div>
-              <div id="kpiAlloc" class="kpi-val tabular-nums text-danger">0% ~ 10%</div>
-              <div id="kpiCapHint" class="kpi-sub">雙軌合成持股</div>
+              <div id="kpi1Label" class="kpi-label">建議總持股水位</div>
+              <div id="kpi1Val" class="kpi-val tabular-nums">--</div>
+              <div id="kpi1Sub" class="kpi-sub">參考配置區間</div>
             </div>
 
             <div class="surface-well">
-              <div class="kpi-label">買賣節奏建議</div>
-              <div id="kpiActionShort" class="kpi-val text-danger">防禦賣出</div>
-              <div id="kpiEscapeHint" class="kpi-sub tabular-nums">逃生閥 60 · 雙巴 85%</div>
+              <div id="kpi2Label" class="kpi-label">買賣節奏建議</div>
+              <div id="kpi2Val" class="kpi-val">--</div>
+              <div id="kpi2Sub" class="kpi-sub">--</div>
             </div>
 
             <div class="surface-well">
-              <div class="kpi-label">市場波動 / 融資維持率</div>
-              <div id="kpiVixMargin" class="kpi-val tabular-nums">35.9 / 148.8%</div>
-              <div class="kpi-sub">VIX 波動與信用水位</div>
+              <div id="kpi3Label" class="kpi-label">市場環境溫度</div>
+              <div id="kpi3Val" class="kpi-val tabular-nums">--</div>
+              <div id="kpi3Sub" class="kpi-sub">--</div>
             </div>
           </div>
 
@@ -699,7 +697,6 @@
         </div>
       </div>
 
-      <!-- 5-Step Spectrum Strip -->
       <div class="spectrum-strip">
         <div id="zoneStep0" class="spectrum-item">⛈️ 避險賣出</div>
         <div id="zoneStep1" class="spectrum-item">🌧️ 減碼防守</div>
@@ -709,39 +706,38 @@
       </div>
     </section>
 
-    <!-- COLLAPSE / EXPAND TRIGGER BAR -->
+    <!-- Collapse / Expand Bar -->
     <section class="surface-card expand-bar-card">
       <button id="toggleDetailsBtn" type="button" onclick="toggleDetailsPanel()" class="accordion-trigger" aria-expanded="false" aria-controls="detailsPanel">
         <div>
-          <h3 class="section-title">完整雙軌分析與籌碼依據</h3>
-          <p class="section-sub">預設隱藏以保持畫面清爽；點擊展開波段／短線雙軌卡、五維晴雨因子、量化圖表與操作細則</p>
+          <h3 class="section-title">完整節奏與指標明細</h3>
+          <p class="section-sub">點擊展開中長線／短線參考、晴雨因子一覽、視覺圖表與操作提醒</p>
         </div>
         <span id="toggleDetailsLabel" class="action-btn">展開完整內容 ▾</span>
       </button>
     </section>
 
-    <!-- DEFAULT HIDDEN: All Detailed Sections -->
+    <!-- Collapsible Details Drawer -->
     <div id="detailsPanel" class="details-wrapper hidden">
-      <!-- Dual-Track Cards -->
       <section class="grid-2">
         <article class="surface-card track-card">
           <div style="display:flex; flex-direction:column; gap:14px;">
             <div class="track-header">
               <div>
-                <div class="track-eyebrow text-info">Track 1 · 波段核心</div>
-                <h3 class="track-title">中長線底倉方向（13:15 尾盤定錨）</h3>
+                <div class="track-eyebrow text-info">中長線參考</div>
+                <h3 id="t1Title" class="track-title">波段趨勢方向</h3>
               </div>
-              <span id="t1Pill" class="pill pill-md tone-danger">保守防禦</span>
+              <span id="t1Pill" class="pill pill-md tone-neutral">--</span>
             </div>
 
             <div class="track-metrics">
               <div class="surface-well">
-                <div class="kpi-label">波段建議持股</div>
-                <div id="t1Alloc" class="kpi-val tabular-nums text-danger">0% ~ 10%</div>
+                <div class="kpi-label">波段參考水位</div>
+                <div id="t1Alloc" class="kpi-val tabular-nums">--</div>
               </div>
               <div class="surface-well">
-                <div class="kpi-label">季線緩衝防線</div>
-                <div id="t1Buffer" style="font-size:12px; font-weight:700; margin-top:6px; line-height:1.45;" class="text-warn">--</div>
+                <div id="t1Metric2Label" class="kpi-label">關鍵觀察</div>
+                <div id="t1Metric2Val" style="font-size:12px; font-weight:700; margin-top:6px; line-height:1.45;">--</div>
               </div>
             </div>
 
@@ -757,20 +753,20 @@
           <div style="display:flex; flex-direction:column; gap:14px;">
             <div class="track-header">
               <div>
-                <div class="track-eyebrow text-warn">Track 2 · 短線節奏</div>
-                <h3 class="track-title">短週期動態調節（1～5 日）</h3>
+                <div class="track-eyebrow text-warn">短週期參考</div>
+                <h3 id="t2Title" class="track-title">短期動態節奏</h3>
               </div>
-              <span id="t2Pill" class="pill pill-md tone-danger">保守防禦</span>
+              <span id="t2Pill" class="pill pill-md tone-neutral">--</span>
             </div>
 
             <div class="track-metrics">
               <div class="surface-well">
-                <div class="kpi-label">短線建議部位</div>
-                <div id="t2Alloc" class="kpi-val tabular-nums text-danger">0%</div>
+                <div class="kpi-label">短線參考部位</div>
+                <div id="t2Alloc" class="kpi-val tabular-nums">--</div>
               </div>
               <div class="surface-well">
-                <div class="kpi-label">隔夜美股動能 (SOX / TSM)</div>
-                <div id="t2Overnight" class="kpi-val tabular-nums text-danger" style="font-size:18px;">--</div>
+                <div id="t2Metric2Label" class="kpi-label">外部動能</div>
+                <div id="t2Metric2Val" class="kpi-val tabular-nums" style="font-size:18px;">--</div>
               </div>
             </div>
 
@@ -783,42 +779,40 @@
         </article>
       </section>
 
-      <!-- 5-Pillar Weather Factors -->
-      <section class="surface-card">
+      <section id="factorsSection" class="surface-card">
         <div class="section-head">
           <div>
-            <h3 class="section-title">五維晴雨因子一覽</h3>
-            <p class="section-sub">一眼看懂目前市場的順風支撐與逆風壓力來源</p>
+            <h3 class="section-title">市場晴雨因子一覽</h3>
+            <p class="section-sub">快速檢視目前市場的順風支撐與逆風壓力</p>
           </div>
-          <span id="factorSummaryPill" class="pill pill-md tone-danger">5 項逆風 · 0 項順風</span>
+          <span id="factorSummaryPill" class="pill pill-md tone-neutral">--</span>
         </div>
 
-        <div id="warningLightsGrid" class="grid-5"></div>
+        <div id="factorsGrid" class="grid-5"></div>
       </section>
 
-      <!-- Quant Charts, EP374 & Guidance -->
       <section class="surface-card" style="display:flex; flex-direction:column; gap:18px;">
-        <div class="grid-2">
+        <div id="chartsGrid" class="grid-2">
           <div class="surface-well">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <h4 style="font-size:13px; font-weight:700;">系統風險壓力雷達 (%)</h4>
-              <span style="font-size:11px; color:var(--text-muted);">數值越高防守需求越強</span>
+              <h4 id="chart1Title" style="font-size:13px; font-weight:700;">風險壓力指標 (%)</h4>
+              <span id="chart1Sub" style="font-size:11px; color:var(--text-muted);">數值越高防守需求越強</span>
             </div>
             <div class="chart-box"><canvas id="stressChart"></canvas></div>
           </div>
 
           <div class="surface-well">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <h4 style="font-size:13px; font-weight:700;">板塊資金輪動與季線乖離 (%)</h4>
-              <span style="font-size:11px; color:var(--text-muted);">正值抗跌 · 負值承壓</span>
+              <h4 id="chart2Title" style="font-size:13px; font-weight:700;">資金輪動概覽 (%)</h4>
+              <span id="chart2Sub" style="font-size:11px; color:var(--text-muted);">正值偏強 · 負值承壓</span>
             </div>
             <div class="chart-box"><canvas id="rotationChart"></canvas></div>
           </div>
         </div>
 
-        <div class="surface-well ep374-box">
-          <div class="directive-title text-warn">資金流向觀察（EP374）</div>
-          <p id="ep374Text" class="directive-text">--</p>
+        <div id="flowNoteBox" class="surface-well flow-note-box">
+          <div id="flowNoteTitle" class="directive-title text-warn">資金流向觀察</div>
+          <p id="flowNoteText" class="directive-text">--</p>
         </div>
 
         <div class="grid-3">
@@ -831,96 +825,154 @@
             <p id="guideCash" class="directive-text" style="font-size:12px;">--</p>
           </div>
           <div class="surface-well">
-            <div class="directive-title text-info">反彈止穩觀察點</div>
+            <div class="directive-title text-info">止穩觀察重點</div>
             <p id="guideRebound" class="directive-text" style="font-size:12px;">--</p>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="surface-well">
-            <div class="directive-title">波段系統判定依據</div>
-            <p id="t1Reason" style="font-size:12px; color:var(--text-muted); line-height:1.55;">--</p>
-          </div>
-          <div class="surface-well">
-            <div class="directive-title">短週期系統判定依據</div>
-            <p id="t2Reason" style="font-size:12px; color:var(--text-muted); line-height:1.55;">--</p>
           </div>
         </div>
       </section>
     </div>
 
     <footer class="footer-note">
-      本頁僅呈現公開量化晴雨快照（signal.json）｜有準純屬巧合，不準正常發揮，進出自行斟酌。
+      本頁僅供市場晴雨資訊參考，不構成任何投資建議，進出請自行斟酌。
     </footer>
   </main>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const FALLBACK_DATA = {
-      updated_at: "最新雙軌快照",
-      severity: "RED",
-      radar_name: "T-10~T-3 籌碼總經核心雷達",
-      status_title: "🚨 崩盤前夕／總部熔斷高危 (5/5 預警燈亮起)",
-      lights_count: 5,
-      lights_total: 5,
-      exposure_cap: "≤ 30%（凍結右側新買單，嚴防多殺多與死貓跳）",
-      directive: "多維前兆共振或總部防線已鎖定：嚴禁追高與左側盲目接刀，優先檢視持股 13:20 防守線，單日急殺破線 <= -6% 啟動提前逃生。",
-      kpi: {
-        total_alloc: "0% ~ 10%",
-        escape_valve: 60,
-        whipsaw_risk: 85,
-        vix: 35.9,
-        margin_rate: 148.8,
-        foreign_3d_pressure: 81
+    const ALLOWED_TONES = new Set(["danger", "warn", "neutral", "good", "info"]);
+
+    // 純佔位預設值，不含任何真實歷史數據或策略門檻
+    const EMPTY_VIEW = {
+      updated_at: "等待同步",
+      default_theme: "light",
+      title_chip: "市場晴雨指標",
+      status_chip: "等待資料",
+      status_chip_tone: "neutral",
+      barometer: {
+        score: 50,
+        zone_index: 2,
+        weather_icon: "⛅",
+        weather_label: "等待更新",
+        action_label: "等待最新晴雨快照",
+        action_short: "中性觀望",
+        tone: "neutral",
+        summary: "目前為預設檢視狀態，連線後將自動載入最新市場晴雨摘要。"
       },
-      warning_lights: [
-        { name: "美股AI源頭", active: true, detail: "SOX -10.7% / TSM -9.5%" },
-        { name: "大盤結構/冷卻鎖", active: true, detail: "36,033 < 45,711，連站 5MA 僅 0 日" },
-        { name: "波動/信用/匯率", active: true, detail: "VIX 35.9 · 美債 10Y 4.91%" },
-        { name: "期權籌碼擁擠", active: true, detail: "外資 -97,430 口 · PCR 62.0%" },
-        { name: "寬度/融資背離", active: true, detail: "中小型剪刀差 -21.7%" }
+      directive: "請待最新快照載入後再檢視參考資訊。",
+      kpis: [
+        { label: "建議總持股水位", value: "--", sub: "參考配置區間", tone: "neutral" },
+        { label: "買賣節奏建議", value: "--", sub: "依最新狀態更新", tone: "neutral" },
+        { label: "市場環境溫度", value: "--", sub: "綜合波動概況", tone: "neutral" }
       ],
       track1: {
-        state: "系統性流動性危機 (雙重確認)",
-        alloc: "0% ~ 10%",
-        buffer_line: "季線緩衝線 (45,345) 已失守，退守整數關卡",
-        reminder: "已通過『破季線緩衝 + 總經/維持率惡化』雙重確認，非單純洗盤，建議以保本與控管現金為主。",
-        reason: "總經與籌碼多重共振（VIX 35.9 >= 30），大盤實質失守季線緩衝帶且流動性緊縮，啟動最高級別去槓桿防禦。"
+        title: "波段趨勢方向",
+        badge: "中性",
+        tone: "neutral",
+        alloc: "--",
+        metric2_label: "關鍵觀察",
+        metric2_value: "--",
+        reminder: "等待載入波段參考資訊。",
+        state: "--"
       },
       track2: {
-        state: "短週期空頭鎖定 / 嚴禁接刀",
-        alloc: "0% (空頭鎖定)",
-        overnight: "-10.73% / -9.48%",
-        reminder: "短週期倉位強制鎖定 0%！急殺谷底不追砍現貨，但未見爆量長下影線站穩日內均價線與櫃買翻紅前，不急於左側搶反彈。",
-        reason: "波段處於空頭防禦且隔夜美股承壓 (-10.21%)、VIX 偏高 (35.9)、維持率 148.8%，短線雖負乖離但空方慣性仍強。"
+        title: "短期動態節奏",
+        badge: "中性",
+        tone: "neutral",
+        alloc: "--",
+        metric2_label: "外部動能",
+        metric2_value: "--",
+        reminder: "等待載入短線參考資訊。",
+        state: "--"
       },
-      command: {
-        ep374_alert: "防禦型板塊（鋼鐵 20日RS +9.2%、金融 +7.9%）逆勢吸金，中小型剪刀差 -21.7%，資金明顯撤離高估值電子股轉往防禦避險。",
-        guidance_hold: "優先汰弱留強，將總持股收斂至 0%～10% 以內，避免融資或槓桿曝險；若跌破關鍵防守線依紀律分批減碼。",
-        guidance_cash: "保持耐心與現金彈性，暫停右側追買與左側摸底，等預警燈回落至 2 盞以下再評估分批布局。",
-        guidance_rebound: "觀察 VIX 回落至 25 以下、美股費半止跌且大盤連站 5 日線，作為盤勢由雨轉晴的第一步訊號。"
-      },
+      factors_summary: "等待資料",
+      factors_tone: "neutral",
+      factors: [],
       charts: {
-        stress_labels: ["盤中逃生閥", "盤中雙巴風險", "外資3日空壓", "VIX恐慌指標"],
-        stress_values: [60, 85, 81, 72],
-        rotation_labels: ["鋼鐵 20日RS", "金融 20日RS", "中小型剪刀差", "TSM 距季線", "SOX 距季線"],
-        rotation_values: [9.2, 7.9, -21.7, -24.6, -26.1]
+        stress_title: "風險壓力指標 (%)",
+        stress_sub: "數值越高防守需求越強",
+        stress_labels: [],
+        stress_values: [],
+        rotation_title: "資金輪動概覽 (%)",
+        rotation_sub: "正值偏強 · 負值承壓",
+        rotation_labels: [],
+        rotation_values: []
+      },
+      guidance: {
+        flow_title: "資金流向觀察",
+        flow_text: "等待載入最新觀察。",
+        hold: "等待載入。",
+        cash: "等待載入。",
+        rebound: "等待載入。"
       }
     };
 
-    let currentData = FALLBACK_DATA;
+    const ZONE_FALLBACK_LABELS = [
+      { icon: "⛈️", label: "避險賣出", action: "防禦避險・保留現金", short: "防禦賣出", tone: "danger" },
+      { icon: "🌧️", label: "減碼防守", action: "減碼觀望・暫緩追價", short: "減碼防守", tone: "warn" },
+      { icon: "⛅", label: "中性整理", action: "中性區間・分批因應", short: "中性觀望", tone: "neutral" },
+      { icon: "🌤️", label: "偏多布局", action: "偏多布局・拉回承接", short: "偏多買進", tone: "good" },
+      { icon: "☀️", label: "積極買進", action: "順勢操作・穩健持有", short: "積極買進", tone: "good" }
+    ];
+
+    let currentData = EMPTY_VIEW;
     let themePref = "auto";
     let detailsExpanded = false;
     let stressChartInstance = null;
     let rotationChartInstance = null;
 
+    function safeTone(tone, fallback = "neutral") {
+      return ALLOWED_TONES.has(tone) ? tone : fallback;
+    }
+
+    function toneTextClass(tone) {
+      return "text-" + safeTone(tone);
+    }
+
+    function clamp(num, min, max) {
+      const n = Number(num);
+      if (Number.isNaN(n)) return min;
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // 純顯示轉換：直接讀取後端算好的 barometer 欄位，前端不做任何因子加權或門檻運算
+    function resolveBarometerView(data) {
+      const raw = (data && data.barometer) || {};
+      const hasScore = raw.score !== undefined && raw.score !== null;
+      const score = hasScore ? Math.round(clamp(raw.score, 0, 100)) : 50;
+      const zoneIndex = Number.isInteger(raw.zone_index)
+        ? clamp(raw.zone_index, 0, 4)
+        : Math.min(4, Math.floor(score / 20));
+      const preset = ZONE_FALLBACK_LABELS[zoneIndex] || ZONE_FALLBACK_LABELS[2];
+
+      return {
+        hasScore,
+        score,
+        zoneIndex,
+        weatherIcon: raw.weather_icon || preset.icon,
+        weatherLabel: raw.weather_label || preset.label,
+        actionLabel: raw.action_label || preset.action,
+        actionShort: raw.action_short || preset.short,
+        tone: safeTone(raw.tone, preset.tone),
+        summary: raw.summary || ""
+      };
+    }
+
     function resolveEffectiveTheme(data) {
       if (themePref === "dark" || themePref === "light") return themePref;
-      const sev = String(data.severity || "YELLOW").toUpperCase();
-      const lights = Number(data.lights_count ?? 0);
-      if (sev === "RED" || sev === "ORANGE" || lights >= 3) return "dark";
-      return "light";
+      if (data && (data.default_theme === "dark" || data.default_theme === "light")) {
+        return data.default_theme;
+      }
+      const tone = resolveBarometerView(data).tone;
+      return tone === "danger" ? "dark" : "light";
     }
 
     function applyTheme(data) {
@@ -929,10 +981,10 @@
 
       const badge = document.getElementById("themeBadge");
       if (mode === "dark") {
-        badge.textContent = themePref === "auto" ? "深色警戒 · 自動" : "深色警戒版";
+        badge.textContent = themePref === "auto" ? "深色模式 · 自動" : "深色模式";
         badge.className = "pill tone-danger";
       } else {
-        badge.textContent = themePref === "auto" ? "白底常態 · 自動" : "白底常態版";
+        badge.textContent = themePref === "auto" ? "淺色模式 · 自動" : "淺色模式";
         badge.className = "pill tone-good";
       }
 
@@ -949,121 +1001,18 @@
       applyTheme(currentData);
     }
 
-    function stripEmojiPrefix(text) {
-      return String(text || "").replace(/^[\s🚨💀🛑⚠️🔥📌⚡🛡️✅🟢🟡🟠🔴【】]+/, "").trim();
-    }
-
-    function parseAllocMid(allocStr, sev) {
-      const nums = String(allocStr || "").match(/\d+(?:\.\d+)?/g);
-      if (nums && nums.length >= 2) {
-        return Math.max(0, Math.min(100, (parseFloat(nums[0]) + parseFloat(nums[1])) / 2));
-      }
-      if (nums && nums.length === 1) {
-        return Math.max(0, Math.min(100, parseFloat(nums[0])));
-      }
-      return sev === "GREEN" ? 84 : sev === "YELLOW" ? 55 : sev === "ORANGE" ? 28 : 8;
-    }
-
-    function computeBarometer(data) {
-      const sev = String(data.severity || "YELLOW").toUpperCase();
-      const lights = Number(data.lights_count ?? 0);
-      const totalLights = Math.max(1, Number(data.lights_total ?? 5));
-      const kpi = data.kpi || {};
-      const escapeValve = Math.min(100, Math.max(0, Number(kpi.escape_valve ?? 0)));
-      const foreign3d = Math.min(100, Math.max(0, Number(kpi.foreign_3d_pressure ?? 50)));
-      const allocMid = parseAllocMid(kpi.total_alloc || (data.track1 && data.track1.alloc), sev);
-
-      const lightScore = (1 - Math.min(1, Math.max(0, lights / totalLights))) * 100;
-      const chartTrendAdj = Math.max(-15, Math.min(12, Math.round(Number(kpi.chart_trend_adj ?? 0))));
-      const extremeMeltup = Boolean(kpi.extreme_meltup);
-      const trendConfirmed3d = Boolean(kpi.trend_confirmed_3d);
-      let score = Math.round(
-        allocMid * 0.40 +
-        lightScore * 0.25 +
-        (100 - escapeValve) * 0.20 +
-        (100 - foreign3d) * 0.15
-      ) + chartTrendAdj;
-      if (sev === "RED") score = Math.min(score, 22);
-      else if (sev === "ORANGE") score = Math.min(score, 42);
-      score = Math.max(2, Math.min(98, score));
-
-      if (extremeMeltup && !trendConfirmed3d && score <= 42) {
-        return {
-          score, zoneIndex: score <= 22 ? 0 : 1, weatherIcon: "🛡️", weatherLabel: "單日暴漲・待3日確認",
-          actionLabel: "以不變應萬變・空單減半防軋", actionShort: "待3日確認", tone: score <= 22 ? "danger" : "warn",
-          summary: "防雙巴盲點提醒：單日暴漲不代表空頭已結束，晴雨表分數與多單水位維持不變，靜待連續 3 個交易日站穩 5MA 再加減分！現貨部位仍重者，避險空單建議先減半 50% 留底觀察尾盤，切忌一次全平卻反遭殺尾盤。 極端轉折防雙巴口訣：暴漲日「空單先減半防軋、多單禁追開盤價、吐回半數漲幅即縮手」，一切以 13:15 尾盤確認為準；有準純屬巧合，不準正常發揮，進出自行斟酌。"
-        };
-      }
-
-      if (score <= 22) {
-        return {
-          score, zoneIndex: 0, weatherIcon: "⛈️", weatherLabel: "暴風警戒",
-          actionLabel: "防禦避險・保留現金", actionShort: "防禦賣出", tone: "danger",
-          summary: "多項總經與籌碼因子同步轉弱，建議優先守護本金、不急於左側抄底。"
-        };
-      }
-      if (score <= 42) {
-        return {
-          score, zoneIndex: 1, weatherIcon: "🌧️", weatherLabel: "陰雨偏弱",
-          actionLabel: "減碼觀望・暫緩追價", actionShort: "減碼防守", tone: "warn",
-          summary: "逆風因子偏多，建議降低持股水位並耐心等待市場止穩。"
-        };
-      }
-      if (score <= 62) {
-        return {
-          score, zoneIndex: 2, weatherIcon: "⛅", weatherLabel: "多雲整理",
-          actionLabel: "中性區間・分批因應", actionShort: "中性觀望", tone: "neutral",
-          summary: "多空力道拉鋸，適合維持彈性部位、避免盤中追高殺低。"
-        };
-      }
-      if (score <= 80) {
-        return {
-          score, zoneIndex: 3, weatherIcon: "🌤️", weatherLabel: "微晴偏多",
-          actionLabel: "偏多布局・拉回承接", actionShort: "偏多買進", tone: "good",
-          summary: "趨勢與籌碼結構正向，可依紀律分批布局主流強勢標的。"
-        };
-      }
-      return {
-        score, zoneIndex: 4, weatherIcon: "☀️", weatherLabel: "晴空萬里",
-        actionLabel: "順勢積極・安心持有", actionShort: "積極買進", tone: "good",
-        summary: "總經、期權與市場寬度全面順風，適合順勢操作並穩健持有。"
-      };
-    }
-
-    function inferTrackBadge(text, fallbackTone) {
-      const s = String(text || "");
-      if (/危機|空頭|鎖定|嚴禁|清倉|崩盤/.test(s)) return { label: "保守防禦", tone: "danger" };
-      if (/減碼|警戒|觀望|震盪|偏空/.test(s)) return { label: "謹慎控倉", tone: "warn" };
-      if (/多頭|順風|攻擊|買進|健康|正常/.test(s)) return { label: "偏多操作", tone: "good" };
-      return { label: "中性因應", tone: fallbackTone || "neutral" };
-    }
-
-    function toneTextClass(tone) {
-      return tone === "danger" ? "text-danger" : tone === "warn" ? "text-warn" : tone === "good" ? "text-good" : "text-info";
-    }
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
     function renderDashboard(data) {
-      currentData = data || FALLBACK_DATA;
+      currentData = (data && typeof data === "object") ? data : EMPTY_VIEW;
       applyTheme(currentData);
 
-      const b = computeBarometer(currentData);
-      const kpi = currentData.kpi || {};
+      const b = resolveBarometerView(currentData);
       const t1 = currentData.track1 || {};
       const t2 = currentData.track2 || {};
-      const cmd = currentData.command || {};
-      const lights = Array.isArray(currentData.warning_lights) ? currentData.warning_lights : [];
-      const activeCount = currentData.lights_count ?? lights.filter(x => x.active).length;
-      const totalCount = currentData.lights_total ?? (lights.length || 5);
+      const g = currentData.guidance || {};
+      const kpis = Array.isArray(currentData.kpis) ? currentData.kpis : EMPTY_VIEW.kpis;
+      const factors = Array.isArray(currentData.factors) ? currentData.factors : [];
 
-      document.getElementById("updatedAtText").textContent = "資料更新：" + (currentData.updated_at || "最新快照");
+      document.getElementById("updatedAtText").textContent = "資料更新：" + (currentData.updated_at || "等待同步");
       const brandBadge = document.getElementById("brandBadge");
       brandBadge.textContent = b.weatherIcon;
       brandBadge.className = "brand-icon tone-" + b.tone;
@@ -1079,96 +1028,107 @@
         step.className = i === b.zoneIndex ? ("spectrum-item tone-" + b.tone) : "spectrum-item";
       }
 
-      document.getElementById("barometerScore").textContent = b.score;
+      document.getElementById("barometerScore").textContent = b.hasScore ? b.score : "--";
       document.getElementById("weatherIcon").textContent = b.weatherIcon;
       document.getElementById("weatherLabel").textContent = b.weatherLabel;
       document.getElementById("weatherPill").className = "pill pill-md tone-" + b.tone;
 
-      document.getElementById("radarNameChip").textContent = currentData.radar_name || "籌碼總經核心雷達";
+      document.getElementById("radarNameChip").textContent = currentData.title_chip || "市場晴雨指標";
       const lightsChip = document.getElementById("lightsChip");
-      lightsChip.textContent = `逆風燈號 ${activeCount} / ${totalCount}`;
-      lightsChip.className = "pill tone-" + (activeCount >= 3 ? "danger" : activeCount >= 1 ? "warn" : "good");
+      lightsChip.textContent = currentData.status_chip || "觀測狀態 --";
+      lightsChip.className = "pill tone-" + safeTone(currentData.status_chip_tone, b.tone);
 
       document.getElementById("actionHeadline").textContent = b.actionLabel;
-      document.getElementById("actionSummary").textContent = b.summary;
+      document.getElementById("actionSummary").textContent = b.summary || "--";
 
-      const kpiAlloc = document.getElementById("kpiAlloc");
-      kpiAlloc.textContent = kpi.total_alloc || t1.alloc || "--";
-      kpiAlloc.className = "kpi-val tabular-nums " + toneTextClass(b.tone);
-      document.getElementById("kpiCapHint").textContent = currentData.exposure_cap ? ("水位上限：" + currentData.exposure_cap.split("（")[0]) : "雙軌合成持股";
-
-      const kpiActionShort = document.getElementById("kpiActionShort");
-      kpiActionShort.textContent = b.actionShort;
-      kpiActionShort.className = "kpi-val " + toneTextClass(b.tone);
-      const whipNum = Number(kpi.whipsaw_risk ?? 0);
-      const whipNote = whipNum >= 60 ? "（宜等13:15確認）" : "";
-      const trendAdjVal = Math.max(-15, Math.min(12, Math.round(Number(kpi.chart_trend_adj ?? 0))));
-      const trendAdjStr = trendAdjVal !== 0 ? ` · 圖表微調 ${trendAdjVal > 0 ? "+" : ""}${trendAdjVal}分` : "";
-      const escapeHintEl = document.getElementById("kpiEscapeHint");
-      escapeHintEl.textContent = `逃生閥 ${kpi.escape_valve ?? "--"} · 雙巴 ${kpi.whipsaw_risk ?? "--"}%${whipNote}${trendAdjStr}`;
-      if (Array.isArray(kpi.chart_trend_notes) && kpi.chart_trend_notes.length) {
-        escapeHintEl.title = kpi.chart_trend_notes.join("、");
+      for (let i = 0; i < 3; i++) {
+        const item = kpis[i] || {};
+        const idx = i + 1;
+        document.getElementById(`kpi${idx}Label`).textContent = item.label || "--";
+        const valEl = document.getElementById(`kpi${idx}Val`);
+        valEl.textContent = item.value || "--";
+        valEl.className = "kpi-val tabular-nums " + (item.tone ? toneTextClass(item.tone) : "");
+        document.getElementById(`kpi${idx}Sub`).textContent = item.sub || "";
       }
 
-      const vixVal = kpi.vix ?? "--";
-      const marginVal = kpi.margin_rate != null ? `${kpi.margin_rate}%` : "--";
-      document.getElementById("kpiVixMargin").textContent = `${vixVal} / ${marginVal}`;
-      document.getElementById("directiveText").textContent = currentData.directive || b.summary;
+      document.getElementById("directiveText").textContent = currentData.directive || b.summary || "--";
 
-      const t1StatusText = t1.status || t1.state || "--";
-      const t1Meta = inferTrackBadge(t1StatusText, b.tone);
+      // Track 1 (pure display)
+      const t1Tone = safeTone(t1.tone, b.tone);
+      document.getElementById("t1Title").textContent = t1.title || "波段趨勢方向";
       const t1Pill = document.getElementById("t1Pill");
-      t1Pill.textContent = t1Meta.label;
-      t1Pill.className = "pill pill-md tone-" + t1Meta.tone;
+      t1Pill.textContent = t1.badge || "--";
+      t1Pill.className = "pill pill-md tone-" + t1Tone;
       const t1Alloc = document.getElementById("t1Alloc");
       t1Alloc.textContent = t1.alloc || "--";
-      t1Alloc.className = "kpi-val tabular-nums " + toneTextClass(t1Meta.tone);
-      document.getElementById("t1Buffer").textContent = t1.defense || t1.buffer_line || "維持季線緩衝追蹤";
-      document.getElementById("t1Reminder").textContent = stripEmojiPrefix(t1.reminder || "依波段紀律調整底倉。");
-      document.getElementById("t1State").textContent = stripEmojiPrefix(t1StatusText);
-      document.getElementById("t1Reason").textContent = t1.detail || t1.reason || "--";
+      t1Alloc.className = "kpi-val tabular-nums " + toneTextClass(t1Tone);
+      document.getElementById("t1Metric2Label").textContent = t1.metric2_label || "關鍵觀察";
+      const t1M2 = document.getElementById("t1Metric2Val");
+      t1M2.textContent = t1.metric2_value || "--";
+      t1M2.className = t1.metric2_tone ? toneTextClass(t1.metric2_tone) : "";
+      document.getElementById("t1Reminder").textContent = t1.reminder || "--";
+      document.getElementById("t1State").textContent = t1.state || "--";
 
-      const t2StatusText = t2.status || t2.state || "--";
-      const t2Meta = inferTrackBadge(t2StatusText, b.tone);
+      // Track 2 (pure display)
+      const t2Tone = safeTone(t2.tone, b.tone);
+      document.getElementById("t2Title").textContent = t2.title || "短期動態節奏";
       const t2Pill = document.getElementById("t2Pill");
-      t2Pill.textContent = t2Meta.label;
-      t2Pill.className = "pill pill-md tone-" + t2Meta.tone;
+      t2Pill.textContent = t2.badge || "--";
+      t2Pill.className = "pill pill-md tone-" + t2Tone;
       const t2Alloc = document.getElementById("t2Alloc");
       t2Alloc.textContent = t2.alloc || "--";
-      t2Alloc.className = "kpi-val tabular-nums " + toneTextClass(t2Meta.tone);
-      document.getElementById("t2Overnight").textContent = t2.overnight || "--";
-      document.getElementById("t2Reminder").textContent = stripEmojiPrefix(t2.reminder || "短線依盤中均價與動能調節。");
-      document.getElementById("t2State").textContent = stripEmojiPrefix(t2StatusText);
-      document.getElementById("t2Reason").textContent = t2.detail || t2.reason || "--";
+      t2Alloc.className = "kpi-val tabular-nums " + toneTextClass(t2Tone);
+      document.getElementById("t2Metric2Label").textContent = t2.metric2_label || "外部動能";
+      const t2M2 = document.getElementById("t2Metric2Val");
+      t2M2.textContent = t2.metric2_value || "--";
+      t2M2.className = "kpi-val tabular-nums " + (t2.metric2_tone ? toneTextClass(t2.metric2_tone) : "");
+      document.getElementById("t2Reminder").textContent = t2.reminder || "--";
+      document.getElementById("t2State").textContent = t2.state || "--";
 
-      const calmCount = Math.max(0, totalCount - activeCount);
+      // Factors (hide section if empty)
+      const factorsSection = document.getElementById("factorsSection");
+      factorsSection.classList.toggle("hidden", factors.length === 0);
       const factorPill = document.getElementById("factorSummaryPill");
-      factorPill.textContent = `${activeCount} 項逆風 · ${calmCount} 項順風`;
-      factorPill.className = "pill pill-md tone-" + (activeCount >= 3 ? "danger" : activeCount >= 1 ? "warn" : "good");
+      factorPill.textContent = currentData.factors_summary || `${factors.length} 項指標`;
+      factorPill.className = "pill pill-md tone-" + safeTone(currentData.factors_tone, b.tone);
 
-      const grid = document.getElementById("warningLightsGrid");
+      const grid = document.getElementById("factorsGrid");
       grid.innerHTML = "";
-      lights.forEach((item, idx) => {
-        const isWarn = Boolean(item.active);
+      factors.forEach((item, idx) => {
+        const tone = safeTone(item.tone, item.active ? "danger" : "good");
+        const badgeText = item.badge || (item.active ? "逆風" : "順風");
         const card = document.createElement("div");
         card.className = "surface-well factor-card";
         card.innerHTML = `
           <div class="factor-top">
-            <span class="factor-name">${idx + 1}. ${escapeHtml(item.title || item.name || "指標")}</span>
-            <span class="pill ${isWarn ? "tone-danger" : "tone-good"}">${isWarn ? "逆風" : "順風"}</span>
+            <span class="factor-name">${idx + 1}. ${escapeHtml(item.name || "指標")}</span>
+            <span class="pill tone-${tone}">${escapeHtml(badgeText)}</span>
           </div>
           <p class="factor-detail">${escapeHtml(item.detail || "--")}</p>
         `;
         grid.appendChild(card);
       });
 
-      const ep374Combined = [cmd.ep374_badge, cmd.ep374_text].filter(Boolean).join("｜") || cmd.ep374_alert;
-      document.getElementById("ep374Text").textContent = ep374Combined || "目前資金輪動無異常極端背離。";
-      document.getElementById("guideHold").textContent = cmd.guide_holder || cmd.guidance_hold || "依雙軌建議總水位控管持股。";
-      document.getElementById("guideCash").textContent = cmd.guide_cash || cmd.guidance_cash || "待晴雨表回升至中性以上再分批切入。";
-      document.getElementById("guideRebound").textContent = cmd.guide_whipsaw || cmd.guidance_rebound || "觀察 VIX 回落與大盤站回短均線。";
+      // Guidance & Flow Note
+      const flowBox = document.getElementById("flowNoteBox");
+      flowBox.classList.toggle("hidden", !g.flow_text);
+      document.getElementById("flowNoteTitle").textContent = g.flow_title || "資金流向觀察";
+      document.getElementById("flowNoteText").textContent = g.flow_text || "";
+      document.getElementById("guideHold").textContent = g.hold || "--";
+      document.getElementById("guideCash").textContent = g.cash || "--";
+      document.getElementById("guideRebound").textContent = g.rebound || "--";
 
-      if (detailsExpanded) renderCharts(currentData);
+      // Hide charts block if both charts have no data
+      const ch = currentData.charts || {};
+      const hasCharts = (Array.isArray(ch.stress_values) && ch.stress_values.length > 0) ||
+                        (Array.isArray(ch.rotation_values) && ch.rotation_values.length > 0);
+      document.getElementById("chartsGrid").classList.toggle("hidden", !hasCharts);
+      document.getElementById("chart1Title").textContent = ch.stress_title || "風險壓力指標 (%)";
+      document.getElementById("chart1Sub").textContent = ch.stress_sub || "";
+      document.getElementById("chart2Title").textContent = ch.rotation_title || "資金輪動概覽 (%)";
+      document.getElementById("chart2Sub").textContent = ch.rotation_sub || "";
+
+      if (detailsExpanded && hasCharts) renderCharts(currentData);
     }
 
     function toggleDetailsPanel() {
@@ -1184,76 +1144,73 @@
 
     function renderCharts(data) {
       if (typeof Chart === "undefined") return;
+      const ch = (data && data.charts) || {};
+      const sLabels = Array.isArray(ch.stress_labels) ? ch.stress_labels : [];
+      const sValues = Array.isArray(ch.stress_values) ? ch.stress_values : [];
+      const rLabels = Array.isArray(ch.rotation_labels) ? ch.rotation_labels : [];
+      const rValues = Array.isArray(ch.rotation_values) ? ch.rotation_values : [];
+      if (!sValues.length && !rValues.length) return;
+
       const isDark = resolveEffectiveTheme(data) === "dark";
       const gridColor = isDark ? "rgba(148, 163, 184, 0.14)" : "rgba(15, 23, 42, 0.08)";
       const tickColor = isDark ? "#94a3b8" : "#475569";
 
-      const ch = data.charts || {};
-      const kpi = data.kpi || {};
-      const sLabels = ch.stress_labels || ["盤中逃生閥", "盤中雙巴風險", "外資3日空壓", "VIX恐慌指標"];
-      const sValues = Array.isArray(ch.stress_values) && ch.stress_values.length
-        ? ch.stress_values
-        : [
-            Number(kpi.escape_valve ?? 0),
-            Number(kpi.whipsaw_risk ?? 0),
-            Number(kpi.foreign_3d_pressure ?? 0),
-            Math.min(100, Math.round(Number(kpi.vix ?? 0) * 2))
-          ];
-      const rLabels = ch.rotation_labels || ["鋼鐵", "金融", "剪刀差", "TSM乖離", "SOX乖離"];
-      const rValues = ch.rotation_values || [0, 0, 0, 0, 0];
-
       const sCtx = document.getElementById("stressChart");
       if (stressChartInstance) stressChartInstance.destroy();
-      stressChartInstance = new Chart(sCtx, {
-        type: "bar",
-        data: {
-          labels: sLabels,
-          datasets: [{
-            data: sValues,
-            backgroundColor: sValues.map(v => v >= 70 ? (isDark ? "rgba(251,113,133,0.75)" : "rgba(225,29,72,0.75)")
-              : v >= 45 ? (isDark ? "rgba(251,191,36,0.75)" : "rgba(217,119,6,0.75)")
-              : (isDark ? "rgba(52,211,153,0.75)" : "rgba(5,150,105,0.75)")),
-            borderRadius: 6,
-            maxBarThickness: 34
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, max: 100, grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
-            x: { grid: { display: false }, ticks: { color: tickColor, font: { size: 11 } } }
+      if (sValues.length) {
+        stressChartInstance = new Chart(sCtx, {
+          type: "bar",
+          data: {
+            labels: sLabels,
+            datasets: [{
+              data: sValues,
+              backgroundColor: sValues.map(v => v >= 70 ? (isDark ? "rgba(251,113,133,0.75)" : "rgba(225,29,72,0.75)")
+                : v >= 45 ? (isDark ? "rgba(251,191,36,0.75)" : "rgba(217,119,6,0.75)")
+                : (isDark ? "rgba(52,211,153,0.75)" : "rgba(5,150,105,0.75)")),
+              borderRadius: 6,
+              maxBarThickness: 34
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, max: 100, grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
+              x: { grid: { display: false }, ticks: { color: tickColor, font: { size: 11 } } }
+            }
           }
-        }
-      });
+        });
+      }
 
       const rCtx = document.getElementById("rotationChart");
       if (rotationChartInstance) rotationChartInstance.destroy();
-      rotationChartInstance = new Chart(rCtx, {
-        type: "bar",
-        data: {
-          labels: rLabels,
-          datasets: [{
-            data: rValues,
-            backgroundColor: rValues.map(v => v >= 0
-              ? (isDark ? "rgba(52,211,153,0.78)" : "rgba(5,150,105,0.78)")
-              : (isDark ? "rgba(251,113,133,0.78)" : "rgba(225,29,72,0.78)")),
-            borderRadius: 6,
-            maxBarThickness: 28
-          }]
-        },
-        options: {
-          indexAxis: "y",
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
-            y: { grid: { display: false }, ticks: { color: tickColor, font: { size: 11 } } }
+      if (rValues.length) {
+        rotationChartInstance = new Chart(rCtx, {
+          type: "bar",
+          data: {
+            labels: rLabels,
+            datasets: [{
+              data: rValues,
+              backgroundColor: rValues.map(v => v >= 0
+                ? (isDark ? "rgba(52,211,153,0.78)" : "rgba(5,150,105,0.78)")
+                : (isDark ? "rgba(251,113,133,0.78)" : "rgba(225,29,72,0.78)")),
+              borderRadius: 6,
+              maxBarThickness: 28
+            }]
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
+              y: { grid: { display: false }, ticks: { color: tickColor, font: { size: 11 } } }
+            }
           }
-        }
-      });
+        });
+      }
     }
 
     function showToast(msg) {
@@ -1265,13 +1222,13 @@
     }
 
     function copyShareSummary() {
-      const b = computeBarometer(currentData);
-      const kpi = currentData.kpi || {};
+      const b = resolveBarometerView(currentData);
+      const kpis = Array.isArray(currentData.kpis) ? currentData.kpis : [];
+      const alloc = (kpis[0] && kpis[0].value) || "--";
       const txt = [
-        `【市場買賣晴雨表】${b.weatherIcon} ${b.weatherLabel}（${b.score}/100 分）`,
+        `【市場買賣晴雨表】${b.weatherIcon} ${b.weatherLabel}（${b.hasScore ? b.score : "--"}/100 分）`,
         `操作建議：${b.actionLabel}`,
-        `建議總持股：${kpi.total_alloc || "--"}｜逆風燈號：${currentData.lights_count ?? 0}/${currentData.lights_total ?? 5}`,
-        `波段核心：${currentData.track1?.alloc || "--"}｜短線節奏：${currentData.track2?.alloc || "--"}`,
+        `參考水位：${alloc}｜波段：${currentData.track1?.alloc || "--"}｜短線：${currentData.track2?.alloc || "--"}`,
         `更新時間：${currentData.updated_at || "最新快照"}`
       ].join("\n");
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1281,7 +1238,7 @@
       }
     }
 
-    async function loadLiveSignalIfHosted() {
+    async function loadLiveSnapshot() {
       const host = window.location.hostname || "";
       if (!host.endsWith("github.io") && host !== "localhost" && host !== "127.0.0.1") {
         return;
@@ -1295,12 +1252,12 @@
           }
         }
       } catch (_) {
-        // Keep embedded snapshot when offline or before first sync
+        // Keep neutral placeholder when offline
       }
     }
 
-    renderDashboard(FALLBACK_DATA);
-    loadLiveSignalIfHosted();
+    renderDashboard(EMPTY_VIEW);
+    loadLiveSnapshot();
   </script>
 </body>
 </html>
