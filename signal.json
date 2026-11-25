@@ -1,0 +1,133 @@
+{
+  "updated_at": "2026-11-26 07:58",
+  "default_theme": "dark",
+  "title_chip": "市場晴雨指標",
+  "status_chip": "逆風燈號 5 / 5",
+  "status_chip_tone": "danger",
+  "barometer": {
+    "score": 10,
+    "zone_index": 0,
+    "weather_icon": "⛈️",
+    "weather_label": "暴風警戒",
+    "action_label": "防禦避險・保留現金",
+    "action_short": "防禦賣出",
+    "tone": "danger",
+    "summary": "多項總經與籌碼因子同步轉弱，建議優先守護本金、不急於左側抄底。"
+  },
+  "directive": "多維前兆共振或防禦防線已鎖定：嚴禁追高與左側盲目接刀，優先檢視持股 13:20 防守線，單日急殺破線 <= -6% 啟動提前逃生。",
+  "kpis": [
+    {
+      "label": "建議總持股水位",
+      "value": "0% ~ 10%",
+      "sub": "參考上限：≤ 30%",
+      "tone": "danger"
+    },
+    {
+      "label": "買賣節奏建議",
+      "value": "防禦賣出",
+      "sub": "震盪偏大，宜等尾盤確認",
+      "tone": "danger"
+    },
+    {
+      "label": "市場環境溫度",
+      "value": "28.3 / 152.9%",
+      "sub": "波動指標與信用水位",
+      "tone": "danger"
+    }
+  ],
+  "track1": {
+    "title": "波段趨勢方向",
+    "badge": "保守防禦",
+    "tone": "danger",
+    "alloc": "0% ~ 10%",
+    "metric2_label": "關鍵觀察",
+    "metric2_value": "季線緩衝線 (45,004) 已失守，退守整數關卡",
+    "metric2_tone": "warn",
+    "reminder": "已通過『破季線緩衝 + 總經/維持率惡化』雙重確認，非單純洗盤。",
+    "state": "系統性流動性危機 (雙重確認)】"
+  },
+  "track2": {
+    "title": "短期動態節奏",
+    "badge": "保守防禦",
+    "tone": "danger",
+    "alloc": "0% (空頭鎖定)",
+    "metric2_label": "外部動能",
+    "metric2_value": "-0.65% / -1.96%",
+    "metric2_tone": "danger",
+    "reminder": "🚫 短週期倉位強制鎖定 0%！急殺谷底不追砍現貨，但未見 10:30 後爆量長下影線站穩日內均價線 (VWAP) 與櫃買翻紅前，嚴禁左側接刀搶反彈。",
+    "state": "短週期：空頭重挫鎖定 / 嚴禁接刀】"
+  },
+  "factors_summary": "5 項逆風 · 0 項順風",
+  "factors_tone": "danger",
+  "factors": [
+    {
+      "name": "海外科技動能",
+      "badge": "逆風",
+      "tone": "danger",
+      "detail": "費半與 TSM ADR 雙破 60MA 季線頸線"
+    },
+    {
+      "name": "大盤均線結構",
+      "badge": "逆風",
+      "tone": "danger",
+      "detail": "處於急殺後 10 日觀察窗（連站 5MA 僅 2 日）；大盤跌破 60MA 季線 (38,195 < 45,367)"
+    },
+    {
+      "name": "波動與信用環境",
+      "badge": "逆風",
+      "tone": "danger",
+      "detail": "VIX 恐慌升溫 (28.3)；美債 10Y 高壓 (4.85%)"
+    },
+    {
+      "name": "期權籌碼分布",
+      "badge": "逆風",
+      "tone": "danger",
+      "detail": "外資期貨淨空單破動態警戒 (-106,203 口)；選擇權 PCR 偏空 (62.0% < 80%)"
+    },
+    {
+      "name": "市場廣度與信用",
+      "badge": "逆風",
+      "tone": "danger",
+      "detail": "中小型股剪刀差惡化 (-21.2%)"
+    }
+  ],
+  "charts": {
+    "stress_title": "風險壓力指標 (%)",
+    "stress_sub": "數值越高防守需求越強",
+    "stress_labels": [
+      "日內防禦壓力",
+      "震盪洗盤風險",
+      "籌碼空方壓力",
+      "市場波動強度"
+    ],
+    "stress_values": [
+      60,
+      85,
+      100,
+      57
+    ],
+    "rotation_title": "資金輪動概覽 (%)",
+    "rotation_sub": "正值偏強 · 負值承壓",
+    "rotation_labels": [
+      "傳產相對強弱",
+      "金融相對強弱",
+      "中小型廣度差",
+      "海外半導體ADR",
+      "費半季線乖離"
+    ],
+    "rotation_values": [
+      1.3,
+      -3.0,
+      -21.2,
+      -18.4,
+      -22.1
+    ]
+  },
+  "guidance": {
+    "flow_title": "資金流向觀察",
+    "flow_text": "美股AI源頭(費半/TSM)跌破季線頸線｜費半 (^SOX -22.1%) 與台積電 ADR (-18.4%) 雙雙失守 60MA 季線頸線，提防外資持續對高基期 AI 硬體/半導體進行波段提款。",
+    "hold": "13:15 尾盤確認破線優先去槓桿，保留 90% 以上現金",
+    "cash": "🚫 嚴禁任何左側摸底，等待 VIX 降溫與融資清洗完畢",
+    "rebound": "極高 (85% - 負乖離過大，急殺追砍極易砍在反彈最低點)"
+  }
+}
