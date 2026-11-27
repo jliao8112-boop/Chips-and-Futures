@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-11-27 15:50",
+  "updated_at": "2026-11-27 21:00",
   "default_theme": "dark",
   "title_chip": "市場晴雨指標",
   "status_chip": "逆風燈號 5 / 5",
   "status_chip_tone": "danger",
   "barometer": {
-    "score": 14,
+    "score": 8,
     "zone_index": 0,
     "weather_icon": "⛈️",
     "weather_label": "暴風警戒",
@@ -30,7 +30,7 @@
     },
     {
       "label": "市場環境溫度",
-      "value": "26.8 / 161.1%",
+      "value": "25.4 / 165.0%",
       "sub": "波動指標與信用水位",
       "tone": "warn"
     }
@@ -76,7 +76,7 @@
       "name": "波動與信用環境",
       "badge": "逆風",
       "tone": "danger",
-      "detail": "VIX 恐慌升溫 (26.8)；美債 10Y 高壓 (4.85%)"
+      "detail": "VIX 恐慌升溫 (25.4)；美債 10Y 高壓 (4.85%)"
     },
     {
       "name": "期權籌碼分布",
@@ -104,7 +104,7 @@
       45,
       60,
       100,
-      54
+      51
     ],
     "rotation_title": "資金輪動概覽 (%)",
     "rotation_sub": "正值偏強 · 負值承壓",
