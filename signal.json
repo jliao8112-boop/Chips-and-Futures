@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-11-28 17:20",
+  "updated_at": "2026-11-28 17:51",
   "default_theme": "dark",
   "title_chip": "市場晴雨指標",
   "status_chip": "逆風燈號 5 / 5",
   "status_chip_tone": "danger",
   "barometer": {
-    "score": 15,
+    "score": 11,
     "zone_index": 0,
     "weather_icon": "⛈️",
     "weather_label": "暴風警戒",
@@ -18,7 +18,7 @@
   "kpis": [
     {
       "label": "建議總持股水位",
-      "value": "28% ~ 43%",
+      "value": "20% ~ 30%",
       "sub": "參考上限：≤ 30%",
       "tone": "danger"
     },
